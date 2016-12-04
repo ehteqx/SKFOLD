@@ -8,7 +8,6 @@
 import random  # For random number generation on a system-wide level
 import math  # For the use of mathematical functions
 import matplotlib.pyplot as plt  # For data plotting
-import sys
 
 # The purpose of the script is to generate couples of real-valued numbers to be
 # used as Cartesian planar coordinates. The points are scattered with a Gaussian
