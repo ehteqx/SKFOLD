@@ -12,26 +12,40 @@ import matplotlib.pyplot as plt
 # The purpose of the script is to build and drive a Self-Organizing Map (SOM)
 # which generalizes the Principal Component Analysis (PCA) approach in the
 # elaboration of data points, arbitrarily distributed in 2 dimensions.
-# The net is unidimensional, and at the end of the self-training process it
-# displaces itself so as it lies on the principal curve that best explains
-# the dataset total variance.
-# The net has a fixed number of neurons and evolves following Teuvo Kohonen's
+# The net is bidimensional, and at the end of the self-training process it
+# displaces itself so as it lies on the principal plane that best explains
+# the overall dataset variance.
+# The net has a fixed structure and evolves following Teuvo Kohonen's
 # algorithm, in an exponentially-decaying time- and learning-rate- adaptive
 # fashion.
 
 # OUTPUT OF THE PROGRAM
 neurmap = []  # List of couple-listed neurons' coordinates (in the xy plane)
 
-
+# PRELIMINARIES
 # Functions
 def eudist(a, b):
     """ The function calculates the Euclidean Distance in two dimensions """
     return math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
 
+def mhdistsq(a, b):
+    """ The function computes the 'Squared Manhattan Distance' in two dimensions """
+    return (a[0] - b[0])**2 + (a[1] - b[1])**2
+
+def vecsum(a, b):
+    """ The function computes the vector sum in two dimensions """
+    return [a[0] + b[0], a[1] + b[1]]
+
+def vecdiff(a, b):
+    """ The function computes the vector difference in two dimensions """
+    return [a[0] - b[0], a[1] - b[1]]
+
 # Variables
-Nneur = 24  # Number of Neurons (for the choice: cfr.: Michele Filannino)
-epsilon = 0.2  # Normalized learning rate (cfr.: Marco Budinich)
-sigma = 18  # Gaussian decay factor
+Nrow = 3  # Number of rows
+Ncol = 25  # Number of columns
+
+epsilon = 0.2  # Normalized learning rate (starting)
+sigma = 18  # Gaussian decay factor (starting)
 
 # Data acquisition
 dataset = []  # Initialized empty
@@ -43,15 +57,113 @@ with open('datagen.txt', 'r') as source:
 
 Npoints = len(dataset)  # Computes the dataset lenght
 
+# NEURAL DRIVE
+# Randomness stuff
+random.SystemRandom()  # initializes system-wide RNG
 
+# Neuron Array Initialization
+neurons = []
 
+for row in range(0, Nrow):  # Array builder
+    neurons.append([])
+    for col in range(0, Ncol):
+        neurons[row].append([])
 
+# Random Neuron Placing
+for row in range(0, Nrow):
+    for col in range(0, Ncol):
+        neurons[row][col] = [random.uniform(-1.0, 1.0), random.uniform(-1.0, 1.0)]
 
+# Distance Matrix Initialization
+distmatrix = []
+for row in range(0, Nrow):  # Array builder
+    distmatrix.append([])
+    for col in range(0, Ncol):
+        distmatrix[row].append([])
 
+# Manhattan Matrix Initialization
+manhattan = []
+for row in range(0, Nrow):  # Array builder
+    manhattan.append([])
+    for col in range(0, Ncol):
+        manhattan[row].append([])
 
+# F-Matrix Initialization
+fmat = []
+for row in range(0, Nrow):  # Array builder
+    fmat.append([])
+    for col in range(0, Ncol):
+        fmat[row].append([])
 
+# Additive Weight Matrix Building
+wm = []
+for row in range(0, Nrow):  # Array builder
+    wm.append([])
+    for col in range(0, Ncol):
+        wm[row].append([])
 
+# Iterative Evolution
 
+iteration = 0
+threshold = 100
+RunAgain = True
 
-# PLAYGROUND
+while RunAgain:
 
+    while iteration < threshold:
+        # Random Example Extraction
+        draw = random.randrange(0, Npoints)
+        example = dataset[draw]
+
+        # Distance Matrix Building
+        for row in range(0, Nrow):
+            for col in range(0, Ncol):
+                distmatrix[row][col] = eudist(example, neurons[row][col])
+
+        # Winner Neuron Challenge
+        nearest = 999999999.9
+        for row in range(0, Nrow):
+            for col in range(0, Ncol):
+                if distmatrix[row][col] < nearest:
+                    nearest = distmatrix[row][col]
+                    winner = [row, col]
+
+        # Manhattan Matrix Building (to winner neuron)
+        for row in range(0, Nrow):
+            for col in range(0, Ncol):
+                manhattan[row][col] = mhdistsq(winner, neurons[row][col])
+
+        # F-Matrix Building (to winner neuron)
+        for row in range(0, Nrow):
+            for col in range(0, Ncol):
+                fmat[row][col] = math.exp(((-1.0)*(manhattan[row][col]))/(2*(sigma**2)))
+
+        # Additive Weight Matrix Building
+        for row in range(0, Nrow):
+            for col in range(0, Ncol):
+                wm[row][col] = (vecdiff(example, neurons[row][col]))
+                wm[row][col][0] = (wm[row][col][0])*(epsilon)*(fmat[row][col])
+                wm[row][col][1] = (wm[row][col][1])*(epsilon)*(fmat[row][col])
+
+        # Weight update
+        for row in range(0, Nrow):
+            for col in range(0, Ncol):
+                neurons[row][col] = vecsum(neurons[row][col], wm[row][col])
+
+        # Counter update
+        iteration = iteration + 1
+
+    # Outer cycle follows here
+    if epsilon <= 0.000000000000004:  # Check if epsilon is almost zero
+        RunAgain = False
+        for row in range(0, Nrow):
+            for col in range(0, Ncol):
+                plt.scatter(neurons[row][col][0], neurons[row][col][1])
+
+        plt.axes().set_aspect('equal')
+        plt.show()
+
+    epsilon = epsilon*0.999  # Update constants
+    sigma = sigma*0.96
+
+neurmap = neurons
