@@ -24,8 +24,8 @@ gsigma = (25.0/3.0)
 pi = math.pi
 
 # Number of points
-Ndata = 900
-Nnoise = 100
+Ndata = 1000
+Nnoise = 0
 
 # Randomness stuff
 random.SystemRandom()  # initializes system-wide RNG
