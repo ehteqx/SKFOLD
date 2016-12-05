@@ -19,6 +19,19 @@ import matplotlib.pyplot as plt
 # algorithm, in an exponentially-decaying time- and learning-rate- adaptive
 # fashion.
 
+# TWEAKABLES
+Nrow = 3  # Number of rows in the map
+Ncol = 25  # Number of columns in the map
+
+epsilon = 0.2  # Normalized learning rate (starting)
+sigma = 18  # Gaussian spread index (starting)
+
+epsdecay = 0.999  # N.L.R. (epsilon) exponential decay factor
+sigdecay = 0.96  # G.S.I. (sigma) exponential decay factor
+
+thresh = 500  # Iterations before decay enactment
+effzero = 0.17  # Learning ends when N.L.R. is equal (or less) to it
+
 # OUTPUT OF THE PROGRAM
 neurmap = []  # List of couple-listed neurons' coordinates (in the xy plane)
 
@@ -30,7 +43,7 @@ def eudist(a, b):
 
 def mhdistsq(a, b):
     """ The function computes the 'Squared Manhattan Distance' in two dimensions """
-    return (a[0] - b[0])**2 + (a[1] - b[1])**2
+    return ((a[0] - b[0])**2 + (a[1] - b[1])**2)
 
 def vecsum(a, b):
     """ The function computes the vector sum in two dimensions """
@@ -40,20 +53,13 @@ def vecdiff(a, b):
     """ The function computes the vector difference in two dimensions """
     return [a[0] - b[0], a[1] - b[1]]
 
-# Variables
-Nrow = 3  # Number of rows
-Ncol = 25  # Number of columns
-
-epsilon = 0.2  # Normalized learning rate (starting)
-sigma = 18  # Gaussian decay factor (starting)
-
 # Data acquisition
 dataset = []  # Initialized empty
 
 with open('datagen.txt', 'r') as source:
     for line in source:
-        buffer = list(map(float, line.split()))  # Maps each line into couple...
-        dataset.append(buffer)  # ...and appends the list (couple) to dataset
+        buff = list(map(float, line.split()))  # Maps each line into couple...
+        dataset.append(buff)  # ...and appends the list (couple) to dataset
 
 Npoints = len(dataset)  # Computes the dataset lenght
 
@@ -105,7 +111,7 @@ for row in range(0, Nrow):  # Array builder
 # Iterative Evolution
 
 iteration = 0
-threshold = 100
+threshold = thresh
 RunAgain = True
 
 while RunAgain:
@@ -131,7 +137,8 @@ while RunAgain:
         # Manhattan Matrix Building (to winner neuron)
         for row in range(0, Nrow):
             for col in range(0, Ncol):
-                manhattan[row][col] = mhdistsq(winner, neurons[row][col])
+                pholder = [row, col]
+                manhattan[row][col] = mhdistsq(winner, pholder)
 
         # F-Matrix Building (to winner neuron)
         for row in range(0, Nrow):
@@ -154,16 +161,25 @@ while RunAgain:
         iteration = iteration + 1
 
     # Outer cycle follows here
-    if epsilon <= 0.000000000000004:  # Check if epsilon is almost zero
+    print("Completed " + str(iteration) + " iterations")
+    if epsilon <= effzero:  # Check if epsilon is almost zero
         RunAgain = False
-        for row in range(0, Nrow):
-            for col in range(0, Ncol):
-                plt.scatter(neurons[row][col][0], neurons[row][col][1])
 
-        plt.axes().set_aspect('equal')
-        plt.show()
+    epsilon = epsilon*epsdecay  # Update parameters
+    sigma = sigma*sigdecay
 
-    epsilon = epsilon*0.999  # Update constants
-    sigma = sigma*0.96
+    threshold = threshold + thresh
 
+# FINALIZATION
+# Outputting
 neurmap = neurons
+
+# Printing
+for row in range(0, Nrow):
+    for col in range(0, Ncol):
+        plt.scatter(neurmap[row][col][0], neurmap[row][col][1])
+
+plt.axes().set_aspect('equal')
+plt.show()
+
+# END OF CODE
