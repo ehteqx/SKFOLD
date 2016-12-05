@@ -30,7 +30,7 @@ epsdecay = 0.999  # N.L.R. (epsilon) exponential decay factor
 sigdecay = 0.96  # G.S.I. (sigma) exponential decay factor
 
 thresh = 500  # Iterations before decay enactment
-effzero = 0.17  # Learning ends when N.L.R. is equal (or less) to it
+effzero = 0.18  # Learning ends when N.L.R. is equal (or less) to it
 
 # OUTPUT OF THE PROGRAM
 neurmap = []  # List of couple-listed neurons' coordinates (in the xy plane)
@@ -175,9 +175,12 @@ while RunAgain:
 neurmap = neurons
 
 # Printing
+for iterable in range(0, len(dataset)):
+    plt.scatter(dataset[iterable][0], dataset[iterable][1], color='red')
+
 for row in range(0, Nrow):
     for col in range(0, Ncol):
-        plt.scatter(neurmap[row][col][0], neurmap[row][col][1])
+        plt.scatter(neurmap[row][col][0], neurmap[row][col][1], color='black')
 
 plt.axes().set_aspect('equal')
 plt.show()
