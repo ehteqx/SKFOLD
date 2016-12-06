@@ -30,7 +30,7 @@ epsdecay = 0.999  # N.L.R. (epsilon) exponential decay factor
 sigdecay = 0.96  # G.S.I. (sigma) exponential decay factor
 
 thresh = 500  # Iterations before decay enactment
-effzero = 0.18  # Learning ends when N.L.R. is equal (or less) to it
+effzero = 0.05  # Learning ends when N.L.R. is equal (or less) to it
 
 # OUTPUT OF THE PROGRAM
 neurmap = []  # List of couple-listed neurons' coordinates (in the xy plane)
