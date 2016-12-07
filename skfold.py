@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 # fashion.
 
 # TWEAKABLES
-Nrow = 3  # Number of rows in the map
-Ncol = 25  # Number of columns in the map
+Nrow = 4  # Number of rows in the map
+Ncol = 50  # Number of columns in the map
 
 epsilon = 0.2  # Normalized learning rate (starting)
 sigma = 18  # Gaussian spread index (starting)
