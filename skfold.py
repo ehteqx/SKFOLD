@@ -185,4 +185,6 @@ for row in range(0, Nrow):
 plt.axes().set_aspect('equal')
 plt.show()
 
+print(neurmap[0][0])
+
 # END OF CODE
