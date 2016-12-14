@@ -5,6 +5,8 @@
 # Copyright (c) 2016 Emanuele Ballarin
 # Software released under the terms of the MIT License
 
+# MODULES IMPORT
+
 import random
 import math
 import matplotlib.pyplot as plt
@@ -18,6 +20,8 @@ import matplotlib.pyplot as plt
 # The net has a fixed structure and evolves following Teuvo Kohonen's
 # algorithm, in an exponentially-decaying time- and learning-rate- adaptive
 # fashion.
+
+# BEGINNING OF CODE
 
 # TWEAKABLES
 Nrow = 4  # Number of rows in the map
@@ -174,13 +178,21 @@ while RunAgain:
 # Outputting
 neurmap = neurons
 
-# Printing
+# Re-outputting the dimensionally-reduced dataset to file
+file = open('reduced-data.txt', 'w')
+
+for k in range(0, len(neurmap)):
+    file.write(str(neurmap[k][0]) + " " + str(neurmap[k][1]) + "\n")
+
+file.close()
+
+# Printing to show the job done
 for iterable in range(0, len(dataset)):
-    plt.scatter(dataset[iterable][0], dataset[iterable][1], color='red')
+    plt.scatter(dataset[iterable][0], dataset[iterable][1], color='red')  # Original dataset
 
 for row in range(0, Nrow):
     for col in range(0, Ncol):
-        plt.scatter(neurmap[row][col][0], neurmap[row][col][1], color='black')
+        plt.scatter(neurmap[row][col][0], neurmap[row][col][1], color='black')  # Reduced dataset
 
 plt.axes().set_aspect('equal')
 plt.show()
