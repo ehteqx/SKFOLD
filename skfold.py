@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 # SKFOLD - Self-organizing Kohonen principal-mainFOLD-approximation map
-# Copyright (c) 2016 Emanuele Ballarin
+# Copyright (c) 2016 Emanuele Ballarin <emanuele@ballarin.cc>
 # Software released under the terms of the MIT License
 
 # MODULES IMPORT
 
 import random
 import math
+import sys
 import matplotlib.pyplot as plt
 
 # The purpose of the script is to build and drive a Self-Organizing Map (SOM)
@@ -131,7 +132,7 @@ while RunAgain:
                 distmatrix[row][col] = eudist(example, neurons[row][col])
 
         # Winner Neuron Challenge
-        nearest = 999999999.9
+        nearest = sys.float_info.max
         for row in range(0, Nrow):
             for col in range(0, Ncol):
                 if distmatrix[row][col] < nearest:
@@ -179,10 +180,11 @@ while RunAgain:
 neurmap = neurons
 
 # Re-outputting the dimensionally-reduced dataset to file
-file = open('reduced-data.txt', 'w')
+file = open('reduced_dataset.txt', 'w')
 
-for k in range(0, len(neurmap)):
-    file.write(str(neurmap[k][0]) + " " + str(neurmap[k][1]) + "\n")
+for row in range(0, Nrow):
+    for col in range(0, Ncol):
+        file.write(str(neurmap[row][col][0]) + " " + str(neurmap[row][col][1]) + "\n")
 
 file.close()
 
@@ -196,7 +198,5 @@ for row in range(0, Nrow):
 
 plt.axes().set_aspect('equal')
 plt.show()
-
-print(neurmap[0][0])
 
 # END OF CODE
