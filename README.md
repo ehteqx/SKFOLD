@@ -1,2 +1,2 @@
 # SKFOLD
-Self-organizing Kohonen principal-mainFOLD-approximation net
+Self-organizing Kohonen principal-mainFOLD-approximation map
